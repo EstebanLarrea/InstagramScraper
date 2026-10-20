@@ -4,27 +4,29 @@ Este es un proyecto didáctico desarrollado en Python para extraer información 
 
 ##  Características
 
-*   **Evasión de Bloqueos:** Utiliza la inyección directa de cookies de sesión para saltarse el formulario de inicio de sesión y evitar baneos de IP.
-*   **Navegación Dinámica:** Construido sobre **Playwright**, interactúa directamente con el Virtual DOM de React de Instagram, realizando scroll dinámico (*Lazy Loading*) para cargar elementos.
-*   **Extracción Estructurada:** Obtiene métricas precisas del perfil (usuario, nombre real, seguidores, seguidos, publicaciones, biografía).
-*   **Exportación a JSON:** Guarda automáticamente todos los datos recopilados y las URLs de las últimas 50 publicaciones en un archivo `datos_perfil.json` estructurado y limpio.
+- **Evasión de Bloqueos:** Utiliza la inyección directa de cookies de sesión mediante contextos de navegador (`Browser Contexts`) para saltarse los formularios de inicio de sesión y simular una sesión legítima.
+- **Análisis Profundo de Publicaciones:** Navega individualmente a las últimas 25 publicaciones para extraer el conteo de likes, comentarios de terceros y descripciones exactas extrayendo metadatos ocultos (`og:description`).
+- **Limpieza de Datos (Regex):** Implementa expresiones regulares para filtrar y destruir ruido de la interfaz de usuario de React (fechas, botones, traducciones), conservando únicamente lenguaje humano útil para modelos de NLP.
+- **Extracción Estructurada:** Obtiene métricas precisas del perfil principal y gestiona ventanas modales dinámicas para capturar muestras de seguidores y seguidos.
+- **Exportación Segura:** Genera un archivo `datos_perfil.json` altamente estructurado y listo para ser consumido por microservicios o APIs de inteligencia artificial.
 
-##  Tecnologías Utilizadas
+### Tecnologías Utilizadas
 
-*   **Python 3.x**
-*   **Playwright** (Motor Chromium)
+- **Python 3.x**
+- **Playwright** (Motor Chromium y manipulación del Virtual DOM)
+- **python-dotenv** (Gestión de seguridad y credenciales)
 
-##  Instalación y Configuración
 
-Sigue estos pasos para ejecutar el proyecto en cualquier computadora local:
+## Instalación y Configuración
 
-**1. Clonar el repositorio**
+Sigue estos pasos para ejecutar el proyecto en cualquier entorno local:
+
+1. **Clonar el repositorio**
 ```bash
-git clone https://github.com/TU-USUARIO/TU-REPOSITORIO.git
+git clone [https://github.com/TU-USUARIO/TU-REPOSITORIO.git](https://github.com/TU-USUARIO/TU-REPOSITORIO.git)
 cd TU-REPOSITORIO
 ```
 
-**2. Instalar dependencias**
 ```bash
 pip install -r requirements.txt
 ```
@@ -35,21 +37,19 @@ Playwright necesita descargar su propio motor interno de Chromium:
 playwright install chromium
 ```
 
-**4. Configurar Credenciales (Muy Importante)**
-Por motivos de seguridad, las credenciales están ignoradas en GitHub (`.gitignore`). Debes crear un archivo llamado `cookies.json` en la raíz del proyecto.
+**4. Configurar Credenciales (Seguridad)**
+Por directrices de seguridad, las credenciales jamás se suben al repositorio. Debes crear un archivo llamado .env en la raíz del proyecto.
 
-Usa las herramientas de desarrollador de tu navegador (F12 > Application > Cookies) en una cuenta *descartable* de Instagram y pega los 5 tokens esenciales con esta estructura:
+Usa las herramientas de desarrollador de tu navegador (F12 > Application > Cookies) en una cuenta descartable de Instagram y pega los 5 valores esenciales en el archivo .env con esta estructura exacta:
 
-```json
-[
-  { "name": "sessionid", "value": "TU_VALOR", "domain": ".instagram.com", "path": "/" },
-  { "name": "csrftoken", "value": "TU_VALOR", "domain": ".instagram.com", "path": "/" },
-  { "name": "ds_user_id", "value": "TU_VALOR", "domain": ".instagram.com", "path": "/" },
-  { "name": "ig_did", "value": "TU_VALOR", "domain": ".instagram.com", "path": "/" },
-  { "name": "mid", "value": "TU_VALOR", "domain": ".instagram.com", "path": "/" }
-]
+```bash
+IG_SESSION_ID="TU_SESSION_ID_AQUI"
+IG_CSRF_TOKEN="TU_CSRF_TOKEN_AQUI"
+IG_DS_USER_ID="TU_USER_ID_AQUI"
+IG_DID="TU_IG_DID_AQUI"
+IG_MID="TU_MID_AQUI"
 ```
->  **Advertencia:** Nunca hagas commit de tu `cookies.json` público y no utilices tu cuenta personal de Instagram para hacer scraping.
+>  **Advertencia:** Asegúrate de que el archivo .env esté incluido en tu .gitignore. No utilices tu cuenta personal principal de Instagram para ejecutar flujos de automatización.
 
 
 
@@ -66,7 +66,6 @@ El navegador se abrirá automáticamente, navegará al perfil objetivo, extraer�
 ![Captura de pantalla 2026-10-16 110454.png](../../Pictures/Screenshots/Captura%20de%20pantalla%202026-10-16%20110454.png)
 
 
-![img_1.png](img_1.png)
 
 ##  Propósito
 Proyecto desarrollado con fines netamente académicos y didácticos para la comprensión de arquitecturas web modernas (SPA/React), automatización de navegadores mediante WebSockets y extracción de datos.
