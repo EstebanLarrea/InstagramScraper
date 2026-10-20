@@ -1,12 +1,16 @@
-from playwright.sync_api import sync_playwright
+import os
 import json
 import re
 import time
 import random
+from dotenv import load_dotenv
+from playwright.sync_api import sync_playwright
+
+# Cargar las variables de entorno desde el archivo .env
+load_dotenv()
 
 USUARIO = "alondra_cgp"
 TOTAL_POSTS = 25
-
 
 UI = {"Responder", "Reply", "Ver traducción", "See translation", "Me gusta", "Like",
       "Seguir", "Follow", "Inicio", "Reels", "Mensajes", "Búsqueda", "Notificaciones",
@@ -17,6 +21,48 @@ FECHA = re.compile(r"^\d+\s?(s|min|m|h|d|sem|w|a|año|años|y)\b", re.I)
 
 def pausa(a, b):
     time.sleep(random.uniform(a, b))
+
+
+def cargar_cookies_desde_env():
+    """Construye la lista de cookies de Playwright leyendo del .env"""
+    session_id = os.getenv("IG_SESSION_ID")
+    if not session_id:
+        return None
+
+    return [
+        {
+            "name": "sessionid",
+            "value": session_id,
+            "domain": ".instagram.com",
+            "path": "/",
+            "secure": True,
+            "httpOnly": True
+        },
+        {
+            "name": "csrftoken",
+            "value": os.getenv("IG_CSRF_TOKEN", ""),
+            "domain": ".instagram.com",
+            "path": "/"
+        },
+        {
+            "name": "ds_user_id",
+            "value": os.getenv("IG_DS_USER_ID", ""),
+            "domain": ".instagram.com",
+            "path": "/"
+        },
+        {
+            "name": "ig_did",
+            "value": os.getenv("IG_DID", ""),
+            "domain": ".instagram.com",
+            "path": "/"
+        },
+        {
+            "name": "mid",
+            "value": os.getenv("IG_MID", ""),
+            "domain": ".instagram.com",
+            "path": "/"
+        }
+    ]
 
 
 def muestra_contactos(page, ruta):
@@ -67,12 +113,13 @@ def run(playwright):
     browser = playwright.chromium.launch(headless=False)
     context = browser.new_context()
 
-    try:
-        with open("cookies.json", "r") as f:
-            context.add_cookies(json.load(f))
-    except FileNotFoundError:
-        print("Error: Falta el archivo cookies.json")
+    # Carga de cookies segura desde variables de entorno
+    cookies = cargar_cookies_desde_env()
+    if not cookies:
+        print("Error: No se encontró IG_SESSION_ID en el archivo .env")
         return
+
+    context.add_cookies(cookies)
 
     page = context.new_page()
     print(f"Navegando al perfil de {USUARIO}...")

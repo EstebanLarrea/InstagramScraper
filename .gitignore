@@ -3,4 +3,4 @@
 __pycache__/
 *.pyc
 *.iml
-cookies.json
+.env
